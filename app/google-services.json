@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "352308648438",
+    "firebase_url": "https://wildtwitter-eb3bc.firebaseio.com",
+    "project_id": "wildtwitter-eb3bc",
+    "storage_bucket": "wildtwitter-eb3bc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352308648438:android:3bb040ba6e69447a",
+        "android_client_info": {
+          "package_name": "fr.wcs.wildtwitter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "352308648438-3l0bt3tvjepcmruop12of9e9k3jqp6vg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fr.wcs.wildtwitter",
+            "certificate_hash": "1af2827eaf92ff2ca0e9a3bc259dd81febe91fc2"
+          }
+        },
+        {
+          "client_id": "352308648438-7amimbkho1r16ifa2q5tkt3rjpmac49q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsU93bLJ7R4ynqKrBMP_vY9jfcVBs2exI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352308648438-7amimbkho1r16ifa2q5tkt3rjpmac49q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
