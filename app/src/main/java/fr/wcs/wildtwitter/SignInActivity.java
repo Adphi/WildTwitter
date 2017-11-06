@@ -27,7 +27,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class SignInActivity extends AppCompatActivity {
 
-    private static final String TAG = "WildTwitter";
+    private static final String TAG = Constants.TAG;
 
     private static final int RC_SIGN_IN = 1;
     private GoogleApiClient mGoogleApiClient;
@@ -39,7 +39,7 @@ public class SignInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        SignInButton buttonGoogleSignIn = (SignInButton) findViewById(R.id.googleSignIn);
+        SignInButton buttonGoogleSignIn = findViewById(R.id.googleSignIn);
         buttonGoogleSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,12 +69,12 @@ public class SignInActivity extends AppCompatActivity {
         };
 
         // email and Password Auth
-        Button buttonLogIn = (Button) findViewById(R.id.buttonLogIn);
+        Button buttonLogIn = findViewById(R.id.buttonLogIn);
         buttonLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText editTextMail = (EditText) findViewById(R.id.editTextMail);
-                EditText editTextPassword = (EditText) findViewById(R.id.editTextPassword);
+                EditText editTextMail = findViewById(R.id.editTextMail);
+                EditText editTextPassword = findViewById(R.id.editTextPassword);
                 String email = editTextMail.getText().toString();
                 String password = editTextPassword.getText().toString();
                 if(!email.isEmpty() && !password.isEmpty()) {
@@ -109,6 +109,14 @@ public class SignInActivity extends AppCompatActivity {
                     Toast.makeText(SignInActivity.this, "Please enter your password.",
                             Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        Button buttonSignUp = findViewById(R.id.buttonSignUp);
+        buttonSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SignInActivity.this, SignUpActivity.class));
             }
         });
 
