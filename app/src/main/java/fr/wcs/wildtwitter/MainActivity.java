@@ -10,16 +10,22 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final String TAG = Constants.TAG;
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
+     * mPagerFragments for each of the sections. We use a
      * {@link FragmentPagerAdapter} derivative, which will keep every
      * loaded fragment in memory. If this becomes too memory intensive, it
      * may be best to switch to a
@@ -35,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
+    private ArrayList<Fragment> mPagerFragments = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,9 +50,13 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mPagerFragments.add(Fragment.instantiate(this, TweetsFragment.class.getName()));
+        mPagerFragments.add(Fragment.instantiate(this, SearchFragment.class.getName()));
+        mPagerFragments.add(Fragment.instantiate(this, MessagesFragment.class.getName()));
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), mPagerFragments);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -97,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        FirebaseUser user = mAuth.getCurrentUser();
+        Log.d(TAG, "onCreate: User Data: " + user.getPhotoUrl() + " " + user);
     }
 
 
@@ -130,32 +144,24 @@ public class MainActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        private ArrayList<Fragment> mFragments;
+
+        public SectionsPagerAdapter(FragmentManager fm, ArrayList<Fragment> fragments) {
             super(fm);
+            mFragments = fragments;
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            switch(position) {
-                case 0:
-                    TweetsFragment tweetsFragment = new TweetsFragment();
-                    return tweetsFragment;
-                case 1:
-                    SearchFragment searchFragment = new SearchFragment();
-                    return searchFragment;
-                case 2:
-                    MessagesFragment messageFragment = new MessagesFragment();
-                    return messageFragment;
-            }
-            return null;
+            return mPagerFragments.get(position);
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return mPagerFragments.size();
         }
 
     }

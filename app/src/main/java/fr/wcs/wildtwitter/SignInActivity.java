@@ -1,6 +1,7 @@
 package fr.wcs.wildtwitter;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +26,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.util.Map;
+
 public class SignInActivity extends AppCompatActivity {
 
     private static final String TAG = Constants.TAG;
@@ -38,6 +41,10 @@ public class SignInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+
+        SharedPreferences sharedPreferences = this.getPreferences(MODE_PRIVATE);
+        Map<String, ?> map = sharedPreferences.getAll();
+        Log.d(TAG, "onCreate: SharedPrefs" + map);
 
         SignInButton buttonGoogleSignIn = findViewById(R.id.googleSignIn);
         buttonGoogleSignIn.setOnClickListener(new View.OnClickListener() {
