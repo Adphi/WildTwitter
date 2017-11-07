@@ -14,6 +14,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="32dp"
+        android:scaleType="fitEnd"
         app:av_border_color="@color/colorAccent"
         app:av_border_width="2dp"
         app:av_text_size_percentage="35"

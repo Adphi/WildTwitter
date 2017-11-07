@@ -1,5 +1,6 @@
 package fr.wcs.wildtwitter;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -73,12 +74,61 @@ public class SignUpActivity extends AppCompatActivity {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+                final FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
+
+                    final ProgressDialog progressDialog = new ProgressDialog(SignUpActivity.this);
+                    progressDialog.setIndeterminate(true);
+                    progressDialog.setMessage("Registration in Progress.");
+                    progressDialog.show();
+
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
-                    startActivity(intent);
+                    EditText editTextName = (EditText)findViewById(R.id.editTextName);
+                    final String userName = editTextName.getText().toString();
+                    StorageReference userAvatar = mUserAvatars.child(user.getUid());
+
+                    Drawable avatarDrawable = mAvatarView.getDrawable();
+                    Bitmap avatar = ((BitmapDrawable)avatarDrawable).getBitmap();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    avatar.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    byte[] data = baos.toByteArray();
+
+
+                    UploadTask uploadTask = userAvatar.putBytes(data);
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                            Log.d(TAG, "onFailure() called with: exception = [" + exception + "]");
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                            Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                            final UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(userName)
+                                    .setPhotoUri(downloadUrl)
+                                    .build();
+
+                            user.updateProfile(profileUpdates)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d(TAG, "User profile updated.");
+                                                progressDialog.cancel();
+                                                Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+                                                startActivity(intent);
+                                            }
+                                            else {
+                                                progressDialog.cancel();
+                                            }
+                                        }
+                                    });
+                        }
+                    });
 
                 } else {
                     // User is signed out
@@ -92,6 +142,7 @@ public class SignUpActivity extends AppCompatActivity {
         buttonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 EditText editTextMail = findViewById(R.id.editTextSignUpMail);
                 EditText editTextPassword = findViewById(R.id.editTextSignUpPassword);
                 EditText editTextConfirmPassword = findViewById(R.id.editTextSignUpConfirmPassword);
@@ -118,46 +169,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     if (task.isSuccessful()) {
                                         // Sign in success, update UI with the signed-in user's information
                                         Log.d(TAG, "createUserWithEmail:success");
-                                        EditText editTextName = (EditText)findViewById(R.id.editTextName);
-                                        final String userName = editTextName.getText().toString();
-                                        final FirebaseUser user = mAuth.getCurrentUser();
-                                        StorageReference userAvatar = mUserAvatars.child(user.getUid());
 
-                                        Drawable avatarDrawable = mAvatarView.getDrawable();
-                                        Bitmap avatar = ((BitmapDrawable)avatarDrawable).getBitmap();
-                                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                        avatar.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                                        byte[] data = baos.toByteArray();
-
-
-                                        UploadTask uploadTask = userAvatar.putBytes(data);
-                                        uploadTask.addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception exception) {
-                                                // Handle unsuccessful uploads
-                                                Log.d(TAG, "onFailure() called with: exception = [" + exception + "]");
-                                            }
-                                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                            @Override
-                                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                                                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                                        .setDisplayName(userName)
-                                                        .setPhotoUri(downloadUrl)
-                                                        .build();
-
-                                                user.updateProfile(profileUpdates)
-                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                            @Override
-                                                            public void onComplete(@NonNull Task<Void> task) {
-                                                                if (task.isSuccessful()) {
-                                                                    Log.d(TAG, "User profile updated.");
-                                                                }
-                                                            }
-                                                        });
-                                            }
-                                        });
                                     } else {
                                         // If sign in fails, display a message to the user.
                                         Log.w(TAG, "createUserWithEmail:failure", task.getException());

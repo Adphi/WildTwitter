@@ -12,8 +12,8 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginTop="16dp"
-        app:av_border_color="@color/colorPrimaryDark"
-        app:av_border_width="1dp"
+        app:av_border_color="@color/colorAccent"
+        app:av_border_width="0dp"
         app:av_text_size_percentage="35"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
@@ -43,7 +43,7 @@
     <ImageView
         android:id="@+id/imageViewTweet"
         android:layout_width="0dp"
-        android:layout_height="128dp"
+        android:layout_height="144dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:scaleType="center"

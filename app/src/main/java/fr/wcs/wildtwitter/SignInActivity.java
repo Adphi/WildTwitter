@@ -37,6 +37,8 @@ public class SignInActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
+    private int mBackButtonCount = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -208,4 +210,23 @@ public class SignInActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mBackButtonCount = 0;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mBackButtonCount > 0) {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText(this, R.string.exit_confirmation, Toast.LENGTH_SHORT).show();
+            mBackButtonCount++;
+        }
+    }
 }

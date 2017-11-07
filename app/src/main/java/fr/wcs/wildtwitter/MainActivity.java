@@ -13,11 +13,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+
+import agency.tango.android.avatarview.views.AvatarView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Fragment> mPagerFragments = new ArrayList<>();
 
+    private int mBackButtonCount = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         mPagerFragments.add(Fragment.instantiate(this, TweetsFragment.class.getName()));
         mPagerFragments.add(Fragment.instantiate(this, SearchFragment.class.getName()));
@@ -63,12 +69,12 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         final TabLayout tabLayout = findViewById(R.id.tabs);
-        //tabLayout.setupWithViewPager(mViewPager);
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
+                mBackButtonCount = 0;
             }
 
             @Override
@@ -88,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 TabLayout.Tab tab = tabLayout.getTabAt(position);
+                mBackButtonCount = 0;
                 if (tab != null) {
                     tab.select();
                 }
@@ -111,6 +118,11 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseUser user = mAuth.getCurrentUser();
         Log.d(TAG, "onCreate: User Data: " + user.getPhotoUrl() + " " + user);
+
+        AvatarView avatarViewUser = findViewById(R.id.avatarViewUser);
+        GlideApp.with(this)
+                .load(user.getPhotoUrl())
+                .into(avatarViewUser);
     }
 
 
@@ -170,5 +182,25 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mBackButtonCount = 0;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mBackButtonCount > 0) {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText(this, R.string.exit_confirmation, Toast.LENGTH_SHORT).show();
+            mBackButtonCount++;
+        }
     }
 }
