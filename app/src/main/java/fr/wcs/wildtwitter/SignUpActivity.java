@@ -1,6 +1,8 @@
 package fr.wcs.wildtwitter;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,12 +15,18 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import agency.tango.android.avatarview.IImageLoader;
@@ -32,6 +40,9 @@ public class SignUpActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+
+    private FirebaseStorage mFirebaseStorage;
+    private StorageReference mUserAvatars;
 
     private AvatarView mAvatarView;
     private IImageLoader mImageLoader;
@@ -55,6 +66,8 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
+        mFirebaseStorage = FirebaseStorage.getInstance();
+        mUserAvatars = mFirebaseStorage.getReference("Avatars");
         mAuth = FirebaseAuth.getInstance();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -106,22 +119,45 @@ public class SignUpActivity extends AppCompatActivity {
                                         // Sign in success, update UI with the signed-in user's information
                                         Log.d(TAG, "createUserWithEmail:success");
                                         EditText editTextName = (EditText)findViewById(R.id.editTextName);
-                                        String userName = editTextName.getText().toString();
-                                        FirebaseUser user = mAuth.getCurrentUser();
-                                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                                .setDisplayName(userName)
-                                                .setPhotoUri(Uri.fromFile(mAvatar))
-                                                .build();
+                                        final String userName = editTextName.getText().toString();
+                                        final FirebaseUser user = mAuth.getCurrentUser();
+                                        StorageReference userAvatar = mUserAvatars.child(user.getUid());
 
-                                        user.updateProfile(profileUpdates)
-                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        if (task.isSuccessful()) {
-                                                            Log.d(TAG, "User profile updated.");
-                                                        }
-                                                    }
-                                                });
+                                        Drawable avatarDrawable = mAvatarView.getDrawable();
+                                        Bitmap avatar = ((BitmapDrawable)avatarDrawable).getBitmap();
+                                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                        avatar.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                                        byte[] data = baos.toByteArray();
+
+
+                                        UploadTask uploadTask = userAvatar.putBytes(data);
+                                        uploadTask.addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception exception) {
+                                                // Handle unsuccessful uploads
+                                                Log.d(TAG, "onFailure() called with: exception = [" + exception + "]");
+                                            }
+                                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                            @Override
+                                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                                                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                                        .setDisplayName(userName)
+                                                        .setPhotoUri(downloadUrl)
+                                                        .build();
+
+                                                user.updateProfile(profileUpdates)
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if (task.isSuccessful()) {
+                                                                    Log.d(TAG, "User profile updated.");
+                                                                }
+                                                            }
+                                                        });
+                                            }
+                                        });
                                     } else {
                                         // If sign in fails, display a message to the user.
                                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -165,6 +201,7 @@ public class SignUpActivity extends AppCompatActivity {
                 mAvatar = imageFile;
                 String avatarUri = imageFile.getPath();
                 mAvatarView.setImageDrawable(Drawable.createFromPath(avatarUri));
+
             }
 
             @Override

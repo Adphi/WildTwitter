@@ -4,30 +4,52 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    tools:layout_editor_absoluteY="81dp">
+
+    <agency.tango.android.avatarview.views.AvatarView
+        android:id="@+id/avatarViewTweet"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="16dp"
+        app:av_border_color="@color/colorPrimaryDark"
+        app:av_border_width="1dp"
+        app:av_text_size_percentage="35"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/textViewAuthor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/avatarViewTweet"
+        app:layout_constraintTop_toTopOf="@+id/avatarViewTweet"
         tools:text="Author Name"/>
 
     <TextView
         android:id="@+id/textViewMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/avatarViewTweet"
         app:layout_constraintTop_toBottomOf="@+id/textViewAuthor"
         tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas aliquam eget sapien vel elementum. Nullam eget ligula vel tortor tempor turpis duis."/>
+
+    <ImageView
+        android:id="@+id/imageViewTweet"
+        android:layout_width="0dp"
+        android:layout_height="128dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:scaleType="center"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="@+id/textViewMessage"
+        app:layout_constraintStart_toEndOf="@+id/avatarViewTweet"
+        app:layout_constraintTop_toBottomOf="@+id/textViewMessage"
+        app:srcCompat="@android:drawable/ic_menu_myplaces"/>
 </android.support.constraint.ConstraintLayout>
