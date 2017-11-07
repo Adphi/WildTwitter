@@ -20,7 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
-import agency.tango.android.avatarview.views.AvatarView;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         Log.d(TAG, "onCreate: User Data: " + user.getPhotoUrl() + " " + user);
 
-        AvatarView avatarViewUser = findViewById(R.id.avatarViewUser);
+        CircleImageView avatarViewUser = findViewById(R.id.avatarViewUser);
         GlideApp.with(this)
                 .load(user.getPhotoUrl())
                 .into(avatarViewUser);

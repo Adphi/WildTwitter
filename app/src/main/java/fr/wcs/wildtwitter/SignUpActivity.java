@@ -31,8 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import agency.tango.android.avatarview.IImageLoader;
-import agency.tango.android.avatarview.loader.PicassoLoader;
-import agency.tango.android.avatarview.views.AvatarView;
+import de.hdodenhof.circleimageview.CircleImageView;
 import pl.aprilapps.easyphotopicker.EasyImage;
 
 public class SignUpActivity extends AppCompatActivity {
@@ -45,7 +44,7 @@ public class SignUpActivity extends AppCompatActivity {
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mUserAvatars;
 
-    private AvatarView mAvatarView;
+    CircleImageView mAvatarView;
     private IImageLoader mImageLoader;
 
     private File mAvatar;
@@ -55,10 +54,11 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        mAvatarView = (AvatarView) findViewById(R.id.avatarView);
+        final ProgressDialog progressDialog = new ProgressDialog(SignUpActivity.this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Registration in Progress.");
 
-        mImageLoader = new PicassoLoader();
-        mImageLoader.loadImage(mAvatarView, "http:/example.com/user/someUserAvatar.png", "User Name");
+        mAvatarView = (CircleImageView) findViewById(R.id.avatarView);
         mAvatarView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,12 +77,6 @@ public class SignUpActivity extends AppCompatActivity {
                 final FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
-
-                    final ProgressDialog progressDialog = new ProgressDialog(SignUpActivity.this);
-                    progressDialog.setIndeterminate(true);
-                    progressDialog.setMessage("Registration in Progress.");
-                    progressDialog.show();
-
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     EditText editTextName = (EditText)findViewById(R.id.editTextName);
                     final String userName = editTextName.getText().toString();
@@ -142,7 +136,6 @@ public class SignUpActivity extends AppCompatActivity {
         buttonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 EditText editTextMail = findViewById(R.id.editTextSignUpMail);
                 EditText editTextPassword = findViewById(R.id.editTextSignUpPassword);
                 EditText editTextConfirmPassword = findViewById(R.id.editTextSignUpConfirmPassword);
@@ -162,6 +155,7 @@ public class SignUpActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 }
                 else {
+                    progressDialog.show();
                     mAuth.createUserWithEmailAndPassword(email, password)
                             .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
                                 @Override
@@ -175,6 +169,7 @@ public class SignUpActivity extends AppCompatActivity {
                                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
                                         Toast.makeText(SignUpActivity.this, task.getException().getMessage().toString(),
                                                 Toast.LENGTH_SHORT).show();
+                                        progressDialog.cancel();
                                     }
 
                                     // ...

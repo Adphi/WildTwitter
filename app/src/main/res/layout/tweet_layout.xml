@@ -7,14 +7,13 @@
     android:layout_height="wrap_content"
     tools:layout_editor_absoluteY="81dp">
 
-    <agency.tango.android.avatarview.views.AvatarView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/avatarViewTweet"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginTop="16dp"
-        app:av_border_color="@color/colorAccent"
-        app:av_border_width="0dp"
-        app:av_text_size_percentage="35"
+        app:civ_border_color="@color/colorAccent"
+        app:civ_border_width="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 

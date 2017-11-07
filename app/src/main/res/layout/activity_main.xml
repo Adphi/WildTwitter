@@ -31,12 +31,12 @@
                 app:layout_scrollFlags="scroll|enterAlways"
                 app:titleTextColor="@color/colorAccent">
 
-                <agency.tango.android.avatarview.views.AvatarView
+                <de.hdodenhof.circleimageview.CircleImageView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/avatarViewUser"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginRight="16dp"
-                    android:scaleType="fitCenter"/>
+                    android:layout_marginRight="16dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"

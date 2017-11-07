@@ -13,7 +13,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
-import agency.tango.android.avatarview.views.AvatarView;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.view.View.GONE;
 
@@ -71,7 +71,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         TextView textViewAuthor;
         TextView textViewMessage;
         ImageView imageViewImage;
-        AvatarView avatarView;
+        CircleImageView avatarView;
 
         public ViewHolder(View itemView) {
             super(itemView);

@@ -7,16 +7,16 @@
     android:layout_height="match_parent"
     tools:context="fr.wcs.wildtwitter.SignUpActivity">
 
-    <agency.tango.android.avatarview.views.AvatarView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/avatarView"
         android:layout_width="128dp"
         android:layout_height="128dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="32dp"
-        android:scaleType="fitEnd"
-        app:av_border_color="@color/colorAccent"
-        app:av_border_width="2dp"
+        app:civ_border_width="2dp"
+        app:civ_border_color="@color/colorAccent"
+        android:src="@drawable/ic_user"
         app:av_text_size_percentage="35"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
