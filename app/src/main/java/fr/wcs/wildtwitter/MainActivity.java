@@ -4,27 +4,33 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.util.ArrayList;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final String TAG = Constants.TAG;
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
+     * mPagerFragments for each of the sections. We use a
      * {@link FragmentPagerAdapter} derivative, which will keep every
      * loaded fragment in memory. If this becomes too memory intensive, it
      * may be best to switch to a
@@ -40,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
+    private ArrayList<Fragment> mPagerFragments = new ArrayList<>();
+
+    private int mBackButtonCount = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,20 +57,61 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        FloatingActionButton floatingActionButtonWrite = findViewById(R.id.floatingActionButtonWrite);
+        floatingActionButtonWrite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, WriteTweetActivity.class));
+            }
+        });
+
+        mPagerFragments.add(Fragment.instantiate(this, TweetsFragment.class.getName()));
+        mPagerFragments.add(Fragment.instantiate(this, SearchFragment.class.getName()));
+        mPagerFragments.add(Fragment.instantiate(this, MessagesFragment.class.getName()));
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), mPagerFragments);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        final TabLayout tabLayout = findViewById(R.id.tabs);
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onTabSelected(TabLayout.Tab tab) {
+                mViewPager.setCurrentItem(tab.getPosition());
+                mBackButtonCount = 0;
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                tabLayout.setScrollPosition(position, positionOffset, false);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                TabLayout.Tab tab = tabLayout.getTabAt(position);
+                mBackButtonCount = 0;
+                if (tab != null) {
+                    tab.select();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
             }
         });
 
@@ -75,6 +126,13 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        FirebaseUser user = mAuth.getCurrentUser();
+        Log.d(TAG, "onCreate: User Data: " + user.getPhotoUrl() + " " + user);
+
+        CircleImageView avatarViewUser = findViewById(R.id.avatarViewUser);
+        GlideApp.with(this)
+                .load(user.getPhotoUrl())
+                .into(avatarViewUser);
     }
 
 
@@ -101,40 +159,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
-    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -142,27 +166,51 @@ public class MainActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        private ArrayList<Fragment> mFragments;
+
+        public SectionsPagerAdapter(FragmentManager fm, ArrayList<Fragment> fragments) {
             super(fm);
+            mFragments = fragments;
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            return mPagerFragments.get(position);
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return mPagerFragments.size();
         }
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mBackButtonCount = 0;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mBackButtonCount > 0) {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText(this, R.string.exit_confirmation, Toast.LENGTH_SHORT).show();
+            mBackButtonCount++;
+        }
     }
 }
