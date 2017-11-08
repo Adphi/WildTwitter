@@ -45,12 +45,12 @@
         android:layout_height="144dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:scaleType="center"
+        android:scaleType="centerCrop"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="@+id/textViewMessage"
         app:layout_constraintStart_toEndOf="@+id/avatarViewTweet"
         app:layout_constraintTop_toBottomOf="@+id/textViewMessage"
-        app:srcCompat="@android:drawable/ic_menu_myplaces"/>
+        app:srcCompat="@drawable/placeholder"/>
 
     <TextView
         android:id="@+id/textViewDate"
