@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="fr.wcs.wildtwitter.MainActivity">
+    <item
+        android:id="@+id/action_log_out"
+        android:icon="@drawable/ic_exit_right_arrow"
+        android:orderInCategory="100"
+        android:title="@string/sign_out"
+        app:showAsAction="always"/>
+</menu>
