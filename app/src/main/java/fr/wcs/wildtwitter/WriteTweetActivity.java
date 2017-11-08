@@ -47,6 +47,7 @@ public class WriteTweetActivity extends AppCompatActivity {
         setContentView(R.layout.activity_write_tweet);
 
         mImageViewPicture = findViewById(R.id.imageViewPicture);
+        Log.d(TAG, "onCreate: Hiding Picture View");
         mImageViewPicture.setVisibility(View.GONE);
 
         ImageButton imageButtonPicture = findViewById(R.id.imageButtonPicture);
@@ -75,13 +76,17 @@ public class WriteTweetActivity extends AppCompatActivity {
                     return;
                 }
 
-                final DatabaseReference tweetRef = FirebaseDatabase.getInstance().getReference("Tweets").push();
+                final DatabaseReference tweetRef = FirebaseDatabase.getInstance().
+                        getReference("Tweets")
+                        .push();
 
                 if(!uploadPicture) {
                     TweetModel tweet = new TweetModel(author, uid, avatarUrl, message, pictureUrl, date);
                     tweetRef.setValue(tweet);
-                    Toast.makeText(WriteTweetActivity.this, "Send.", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(WriteTweetActivity.this, MainActivity.class);
+                    Toast.makeText(WriteTweetActivity.this, "Send.", Toast.LENGTH_SHORT)
+                            .show();
+                    Intent intent = new Intent(
+                            WriteTweetActivity.this, MainActivity.class);
                     WriteTweetActivity.this.finish();
                     startActivity(intent);
                 }
@@ -98,7 +103,9 @@ public class WriteTweetActivity extends AppCompatActivity {
                     picture.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                     byte[] data = baos.toByteArray();
 
-                    StorageReference pictureRef = FirebaseStorage.getInstance().getReference("TweetsPictures");
+                    StorageReference pictureRef = FirebaseStorage.getInstance()
+                            .getReference("TweetsPictures")
+                            .child(String.valueOf(data.hashCode()));
                     UploadTask uploadTask = pictureRef.putBytes(data);
                     uploadTask.addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -115,9 +122,12 @@ public class WriteTweetActivity extends AppCompatActivity {
 
                             TweetModel tweet = new TweetModel(author, uid, avatarUrl, message, pictureUrl, date);
                             tweetRef.setValue(tweet);
-                            Toast.makeText(WriteTweetActivity.this, "Send.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(
+                                    WriteTweetActivity.this, "Send.", Toast.LENGTH_SHORT)
+                                    .show();
                             progressDialog.cancel();
-                            Intent intent = new Intent(WriteTweetActivity.this, MainActivity.class);
+                            Intent intent = new Intent(
+                                    WriteTweetActivity.this, MainActivity.class);
                             WriteTweetActivity.this.finish();
                             startActivity(intent);
                         }
@@ -144,8 +154,15 @@ public class WriteTweetActivity extends AppCompatActivity {
             public void onImagePicked(File imageFile, EasyImage.ImageSource source, int type) {
                 Log.d(TAG, "onImagePicked() called with: imageFile = [" + imageFile + "], source = [" + source + "], type = [" + type + "]");
                 String avatarUri = imageFile.getPath();
-                mImageViewPicture.setVisibility(View.VISIBLE);
                 mImageViewPicture.setImageDrawable(Drawable.createFromPath(avatarUri));
+                mImageViewPicture.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "onImagePicked: Showing Picture View");
+                        mImageViewPicture.setVisibility(View.VISIBLE);
+                    }
+                }, 100);
+                //mImageViewPicture.setVisibility(View.VISIBLE);
                 uploadPicture = true;
             }
 
