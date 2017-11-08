@@ -3,6 +3,7 @@ package fr.wcs.wildtwitter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -56,6 +58,14 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        FloatingActionButton floatingActionButtonWrite = findViewById(R.id.floatingActionButtonWrite);
+        floatingActionButtonWrite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, WriteTweetActivity.class));
+            }
+        });
 
         mPagerFragments.add(Fragment.instantiate(this, TweetsFragment.class.getName()));
         mPagerFragments.add(Fragment.instantiate(this, SearchFragment.class.getName()));

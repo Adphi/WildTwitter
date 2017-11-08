@@ -51,4 +51,16 @@
         app:layout_constraintStart_toEndOf="@+id/avatarViewTweet"
         app:layout_constraintTop_toBottomOf="@+id/textViewMessage"
         app:srcCompat="@android:drawable/ic_menu_myplaces"/>
+
+    <TextView
+        android:id="@+id/textViewDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="TextView"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/avatarViewTweet"
+        tools:text="42 Février 2042"/>
 </android.support.constraint.ConstraintLayout>

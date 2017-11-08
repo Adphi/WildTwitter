@@ -6,15 +6,22 @@ package fr.wcs.wildtwitter;
 
 public class TweetModel {
     private String mAuthor;
+    private String mAuthorUid;
     private String mAuthorAvatar;
     private String mMessage;
     private String mMessageImage;
+    private long mDate;
 
-    public TweetModel(String author, String authorAvatar, String message, String messageImage) {
+    public TweetModel() {
+    }
+
+    public TweetModel(String author, String authorUid, String authorAvatar, String message, String messageImage, long date) {
         mAuthor = author;
+        mAuthorUid = authorUid;
         mAuthorAvatar = authorAvatar;
         mMessage = message;
         mMessageImage = messageImage;
+        mDate = date;
     }
 
     public String getAuthor() {
@@ -47,6 +54,22 @@ public class TweetModel {
 
     public void setMessageImage(String messageImage) {
         mMessageImage = messageImage;
+    }
+
+    public String getAuthorUid() {
+        return mAuthorUid;
+    }
+
+    public void setAuthorUid(String authorUid) {
+        mAuthorUid = authorUid;
+    }
+
+    public long getDate() {
+        return mDate;
+    }
+
+    public void setDate(long date) {
+        mDate = date;
     }
 
     @Override

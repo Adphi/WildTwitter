@@ -9,9 +9,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -22,6 +23,8 @@ import static android.view.View.GONE;
  */
 
 public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder> {
+
+    private final String TAG = Constants.TAG;
 
     private ArrayList<TweetModel> mTweets;
     private Context mContext;
@@ -45,19 +48,21 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         TweetModel tweet = mTweets.get(position);
         holder.textViewAuthor.setText(tweet.getAuthor());
         holder.textViewMessage.setText(tweet.getMessage());
+        SimpleDateFormat sfd = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String date = sfd.format(new Date(tweet.getDate()));
+        holder.textViewDate.setText(date);
         if(tweet.getMessageImage().isEmpty()) {
             holder.imageViewImage.setVisibility(GONE);
         }
         else {
-            StorageReference ref = mFirebaseStorage.getReferenceFromUrl("gs://wildtwitter-eb3bc.appspot.com/nikola_tesla_2037575.jpg");
             holder.imageViewImage.setVisibility(View.VISIBLE);
             GlideApp.with(mContext)
-                    .load(ref)
+                    .load(tweet.getMessageImage())
                     .into(holder.imageViewImage);
         }
-        StorageReference avatarRef = mFirebaseStorage.getReferenceFromUrl("gs://wildtwitter-eb3bc.appspot.com/Avatars/796VNhzEGFc67Q48qbp3hzUc7As1");
+
         GlideApp.with(mContext)
-                .load(avatarRef)
+                .load(tweet.getAuthorAvatar())
                 .into(holder.avatarView);
     }
 
@@ -72,6 +77,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         TextView textViewMessage;
         ImageView imageViewImage;
         CircleImageView avatarView;
+        TextView textViewDate;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -79,6 +85,11 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             textViewMessage = itemView.findViewById(R.id.textViewMessage);
             imageViewImage = itemView.findViewById(R.id.imageViewTweet);
             avatarView = itemView.findViewById(R.id.avatarViewTweet);
+            textViewDate = itemView.findViewById(R.id.textViewDate);
         }
+    }
+
+    private void setImage(ImageView imageView, String url) {
+
     }
 }

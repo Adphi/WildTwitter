@@ -16,7 +16,7 @@
         android:layout_marginTop="32dp"
         app:civ_border_width="2dp"
         app:civ_border_color="@color/colorAccent"
-        android:src="@drawable/ic_user"
+        android:src="@drawable/user"
         app:av_text_size_percentage="35"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
