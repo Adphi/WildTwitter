@@ -16,7 +16,7 @@ import java.io.InputStream;
  */
 
 @GlideModule
-public class MyAppGlideModule extends AppGlideModule {
+public class FirebaseGlideModule extends AppGlideModule {
 
     @Override
     public void registerComponents(Context context, Glide glide, Registry registry) {

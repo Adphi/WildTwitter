@@ -73,6 +73,35 @@ public class TweetModel {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TweetModel that = (TweetModel) o;
+
+        if (mDate != that.mDate) return false;
+        if (mAuthor != null ? !mAuthor.equals(that.mAuthor) : that.mAuthor != null) return false;
+        if (mAuthorUid != null ? !mAuthorUid.equals(that.mAuthorUid) : that.mAuthorUid != null)
+            return false;
+        if (mAuthorAvatar != null ? !mAuthorAvatar.equals(that.mAuthorAvatar) : that.mAuthorAvatar != null)
+            return false;
+        if (mMessage != null ? !mMessage.equals(that.mMessage) : that.mMessage != null)
+            return false;
+        return mMessageImage != null ? mMessageImage.equals(that.mMessageImage) : that.mMessageImage == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mAuthor != null ? mAuthor.hashCode() : 0;
+        result = 31 * result + (mAuthorUid != null ? mAuthorUid.hashCode() : 0);
+        result = 31 * result + (mAuthorAvatar != null ? mAuthorAvatar.hashCode() : 0);
+        result = 31 * result + (mMessage != null ? mMessage.hashCode() : 0);
+        result = 31 * result + (mMessageImage != null ? mMessageImage.hashCode() : 0);
+        result = 31 * result + (int) (mDate ^ (mDate >>> 32));
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "TweetModel{" +
                 "mAuthor='" + mAuthor + '\'' +

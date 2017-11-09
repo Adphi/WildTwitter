@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOffscreenPageLimit(2);
 
         final TabLayout tabLayout = findViewById(R.id.tabs);
 
@@ -208,9 +209,12 @@ public class MainActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }
-        else {
+        else if(mViewPager.getCurrentItem() == 0){
             Toast.makeText(this, R.string.exit_confirmation, Toast.LENGTH_SHORT).show();
             mBackButtonCount++;
+        }
+        else {
+            mViewPager.setCurrentItem(0);
         }
     }
 }

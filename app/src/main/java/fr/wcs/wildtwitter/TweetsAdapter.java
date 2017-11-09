@@ -2,6 +2,8 @@ package fr.wcs.wildtwitter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.style.URLSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +36,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         mTweets = tweets;
         mContext = context;
         mFirebaseStorage = FirebaseStorage.getInstance();
-    }
+   }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -51,6 +53,15 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         SimpleDateFormat sfd = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String date = sfd.format(new Date(tweet.getDate()));
         holder.textViewDate.setText(date);
+
+        URLSpan spans[] = holder.textViewMessage.getUrls();
+        for(URLSpan span: spans) {
+            String sampleUrl = span.getURL();
+            if(sampleUrl.contains("http")) {
+                Log.d(TAG, "onBindViewHolder: " + sampleUrl);
+            }
+        }
+
         if(tweet.getMessageImage().isEmpty()) {
             holder.imageViewImage.setVisibility(GONE);
         }
