@@ -32,6 +32,7 @@ import java.io.File;
 
 import agency.tango.android.avatarview.IImageLoader;
 import de.hdodenhof.circleimageview.CircleImageView;
+import fr.wcs.wildtwitter.Utils.Constants;
 import pl.aprilapps.easyphotopicker.EasyImage;
 
 public class SignUpActivity extends AppCompatActivity {

@@ -1,4 +1,4 @@
-package fr.wcs.wildtwitter;
+package fr.wcs.wildtwitter.Models;
 
 import java.util.ArrayList;
 

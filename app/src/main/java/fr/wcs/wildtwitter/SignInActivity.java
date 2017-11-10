@@ -28,6 +28,8 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.Map;
 
+import fr.wcs.wildtwitter.Utils.Constants;
+
 public class SignInActivity extends AppCompatActivity {
 
     private static final String TAG = Constants.TAG;

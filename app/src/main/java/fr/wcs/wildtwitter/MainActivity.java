@@ -23,6 +23,8 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import fr.wcs.wildtwitter.UI.TweetsFragment;
+import fr.wcs.wildtwitter.Utils.Constants;
 
 public class MainActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package fr.wcs.wildtwitter;
+package fr.wcs.wildtwitter.Models;
 
 /**
  * Created by adphi on 06/11/17.

@@ -4,7 +4,8 @@
                                              android:id="@+id/frameLayout"
                                              android:layout_width="match_parent"
                                              android:layout_height="match_parent"
-                                             tools:context="fr.wcs.wildtwitter.TweetsFragment">
+                                             android:background="@android:color/transparent"
+                                             tools:context="fr.wcs.wildtwitter.UI.TweetsFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewTweets"
@@ -13,6 +14,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:background="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

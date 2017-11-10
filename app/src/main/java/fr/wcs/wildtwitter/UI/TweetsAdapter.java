@@ -1,7 +1,9 @@
-package fr.wcs.wildtwitter;
+package fr.wcs.wildtwitter.UI;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,13 +12,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.storage.FirebaseStorage;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import fr.wcs.wildtwitter.GlideApp;
+import fr.wcs.wildtwitter.Models.TweetModel;
+import fr.wcs.wildtwitter.R;
+import fr.wcs.wildtwitter.Utils.Constants;
 
 import static android.view.View.GONE;
 
@@ -30,13 +32,29 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
     private ArrayList<TweetModel> mTweets;
     private Context mContext;
-    private FirebaseStorage mFirebaseStorage;
 
-    public TweetsAdapter(Context context,ArrayList<TweetModel> tweets) {
+    private Handler handler;
+    private Runnable handlerTask;
+
+    private ImageClickedListener mImageClickedListener = null;
+
+    public TweetsAdapter(Context context, ArrayList<TweetModel> tweets) {
         mTweets = tweets;
         mContext = context;
-        mFirebaseStorage = FirebaseStorage.getInstance();
-   }
+        initializeTimer();
+    }
+
+    private void initializeTimer(){
+        handler = new Handler();
+        handlerTask = new Runnable() {
+            @Override
+            public void run() {
+                notifyDataSetChanged();
+                handler.postDelayed(handlerTask, DateUtils.MINUTE_IN_MILLIS);
+            }
+        };
+        handlerTask.run();
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -47,11 +65,10 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        TweetModel tweet = mTweets.get(position);
+        final TweetModel tweet = mTweets.get(position);
         holder.textViewAuthor.setText(tweet.getAuthor());
         holder.textViewMessage.setText(tweet.getMessage());
-        SimpleDateFormat sfd = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        String date = sfd.format(new Date(tweet.getDate()));
+        CharSequence date = DateUtils.getRelativeTimeSpanString(tweet.getDate());
         holder.textViewDate.setText(date);
 
         URLSpan spans[] = holder.textViewMessage.getUrls();
@@ -75,6 +92,15 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         GlideApp.with(mContext)
                 .load(tweet.getAuthorAvatar())
                 .into(holder.avatarView);
+
+        holder.imageViewImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mImageClickedListener != null) {
+                    mImageClickedListener.onImageClickedListener(tweet.getMessageImage());
+                }
+            }
+        });
     }
 
     @Override
@@ -100,7 +126,11 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         }
     }
 
-    private void setImage(ImageView imageView, String url) {
+    public void setOnImageClickedListener(ImageClickedListener listener) {
+        mImageClickedListener = listener;
+    }
 
+    public interface ImageClickedListener {
+        void onImageClickedListener(String imageUrl);
     }
 }
