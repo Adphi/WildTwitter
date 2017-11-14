@@ -1,4 +1,4 @@
-package fr.wcs.wildtwitter.UI;
+package fr.wcs.wildtwitter.UI.Adapters;
 
 import android.content.Context;
 import android.os.Handler;

@@ -1,4 +1,4 @@
-package fr.wcs.wildtwitter;
+package fr.wcs.wildtwitter.UI.Activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -15,6 +15,7 @@ import android.widget.Toast;
 import java.io.File;
 
 import fr.wcs.wildtwitter.Controllers.TweetController;
+import fr.wcs.wildtwitter.R;
 import fr.wcs.wildtwitter.Utils.Constants;
 import pl.aprilapps.easyphotopicker.EasyImage;
 

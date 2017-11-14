@@ -6,4 +6,6 @@ package fr.wcs.wildtwitter.Utils;
 
 public class Constants {
     public static final String TAG = "WildTwitter";
+
+    public static final String AVATAR_REFERENCE = "Avatars";
 }

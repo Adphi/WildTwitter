@@ -1,4 +1,4 @@
-package fr.wcs.wildtwitter.UI;
+package fr.wcs.wildtwitter.UI.Fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import fr.wcs.wildtwitter.Controllers.TweetController;
 import fr.wcs.wildtwitter.Models.TweetModel;
 import fr.wcs.wildtwitter.R;
+import fr.wcs.wildtwitter.UI.Activities.ImageFullScreenActivity;
+import fr.wcs.wildtwitter.UI.Adapters.TweetsAdapter;
 import fr.wcs.wildtwitter.Utils.Constants;
 
 

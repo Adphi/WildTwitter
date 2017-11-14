@@ -1,11 +1,10 @@
-package fr.wcs.wildtwitter;
+package fr.wcs.wildtwitter.UI.Activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,16 +17,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 
-import java.util.Map;
-
+import fr.wcs.wildtwitter.Controllers.SignController;
+import fr.wcs.wildtwitter.R;
+import fr.wcs.wildtwitter.SignUpActivity;
 import fr.wcs.wildtwitter.Utils.Constants;
 
 public class SignInActivity extends AppCompatActivity {
@@ -36,8 +29,9 @@ public class SignInActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 1;
     private GoogleApiClient mGoogleApiClient;
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    private SignController mSignController = null;
+
+    private ProgressDialog mProgressDialog;
 
     private int mBackButtonCount = 0;
 
@@ -46,38 +40,35 @@ public class SignInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        SharedPreferences sharedPreferences = this.getPreferences(MODE_PRIVATE);
-        Map<String, ?> map = sharedPreferences.getAll();
-        Log.d(TAG, "onCreate: SharedPrefs" + map);
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setMessage("Signing In.");
+
+        mSignController = SignController.getInstance();
+
+        mSignController.setSignInListener(new SignController.SignInListener() {
+            @Override
+            public void onSuccess() {
+                mProgressDialog.cancel();
+                Toast.makeText(SignInActivity.this, "Signed In", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(SignInActivity.this, MainActivity.class));
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Toast.makeText(SignInActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         SignInButton buttonGoogleSignIn = findViewById(R.id.googleSignIn);
         buttonGoogleSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "onClick");
                 signIn();
             }
         });
 
-        mAuth = FirebaseAuth.getInstance();
-
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    // User is signed in
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-                    startActivity(intent);
-
-                } else {
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
-                // ...
-            }
-        };
 
         // email and Password Auth
         Button buttonLogIn = findViewById(R.id.buttonLogIn);
@@ -89,25 +80,8 @@ public class SignInActivity extends AppCompatActivity {
                 String email = editTextMail.getText().toString();
                 String password = editTextPassword.getText().toString();
                 if(!email.isEmpty() && !password.isEmpty()) {
-                    mAuth.signInWithEmailAndPassword(email, password)
-                            .addOnCompleteListener(SignInActivity.this, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        // Sign in success, update UI with the signed-in user's information
-                                        Log.d(TAG, "signInWithEmail:success");
-                                        FirebaseUser user = mAuth.getCurrentUser();
-
-                                    } else {
-                                        // If sign in fails, display a message to the user.
-                                        Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                        Toast.makeText(SignInActivity.this, task.getException().getMessage().toString(),
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-
-                                    // ...
-                                }
-                            });
+                    mProgressDialog.show();
+                    mSignController.signInWithMailAndPassword(SignInActivity.this, email, password);
                 }
                 else if(email.isEmpty() && password.isEmpty()) {
                     Toast.makeText(SignInActivity.this, "Please enter your email and password.",
@@ -151,15 +125,13 @@ public class SignInActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+        mSignController.attach();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
+        mSignController.dettach();
     }
 
     private void signIn() {
@@ -173,43 +145,16 @@ public class SignInActivity extends AppCompatActivity {
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
+            mProgressDialog.show();
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
-                // Google Sign In was successful, authenticate with Firebase
+                // Google Sign In was successful
                 GoogleSignInAccount account = result.getSignInAccount();
-                firebaseAuthWithGoogle(account);
+                mSignController.signInWithGoogle(account);
             } else {
-                // Google Sign In failed, update UI appropriately
-                // ...
+                // Google Sign In failed
             }
         }
-    }
-
-    private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
-
-        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(SignInActivity.this, task.getException().getMessage().toString(),
-                                    Toast.LENGTH_SHORT).show();
-
-                        }
-
-                        // ...
-                    }
-                });
-
     }
 
     @Override

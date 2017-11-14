@@ -1,4 +1,4 @@
-package fr.wcs.wildtwitter.UI;
+package fr.wcs.wildtwitter.UI.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
