@@ -50,14 +50,17 @@ public class SignUpActivity extends AppCompatActivity {
 
     private File mAvatar;
 
+    private ProgressDialog mProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        final ProgressDialog progressDialog = new ProgressDialog(SignUpActivity.this);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Registration in Progress.");
+        mProgressDialog = new ProgressDialog(SignUpActivity.this);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setMessage("Registration in Progress.");
 
         mAvatarView = (CircleImageView) findViewById(R.id.avatarView);
         mAvatarView.setOnClickListener(new View.OnClickListener() {
@@ -113,12 +116,12 @@ public class SignUpActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
                                                 Log.d(TAG, "User profile updated.");
-                                                progressDialog.cancel();
+                                                mProgressDialog.cancel();
                                                 Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
                                                 startActivity(intent);
                                             }
                                             else {
-                                                progressDialog.cancel();
+                                                mProgressDialog.cancel();
                                             }
                                         }
                                     });
@@ -156,7 +159,7 @@ public class SignUpActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    progressDialog.show();
+                    mProgressDialog.show();
                     mAuth.createUserWithEmailAndPassword(email, password)
                             .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
                                 @Override
@@ -170,7 +173,7 @@ public class SignUpActivity extends AppCompatActivity {
                                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
                                         Toast.makeText(SignUpActivity.this, task.getException().getMessage().toString(),
                                                 Toast.LENGTH_SHORT).show();
-                                        progressDialog.cancel();
+                                        mProgressDialog.cancel();
                                     }
 
                                     // ...

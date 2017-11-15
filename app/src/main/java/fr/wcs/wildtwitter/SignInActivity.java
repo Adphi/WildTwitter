@@ -1,7 +1,7 @@
 package fr.wcs.wildtwitter;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -26,8 +26,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-import java.util.Map;
-
 import fr.wcs.wildtwitter.Utils.Constants;
 
 public class SignInActivity extends AppCompatActivity {
@@ -41,14 +39,17 @@ public class SignInActivity extends AppCompatActivity {
 
     private int mBackButtonCount = 0;
 
+    private ProgressDialog mProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        SharedPreferences sharedPreferences = this.getPreferences(MODE_PRIVATE);
-        Map<String, ?> map = sharedPreferences.getAll();
-        Log.d(TAG, "onCreate: SharedPrefs" + map);
+        mProgressDialog = new ProgressDialog(SignInActivity.this);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setMessage("Connection in Progress.");
 
         SignInButton buttonGoogleSignIn = findViewById(R.id.googleSignIn);
         buttonGoogleSignIn.setOnClickListener(new View.OnClickListener() {
@@ -84,6 +85,7 @@ public class SignInActivity extends AppCompatActivity {
         buttonLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mProgressDialog.show();
                 EditText editTextMail = findViewById(R.id.editTextMail);
                 EditText editTextPassword = findViewById(R.id.editTextPassword);
                 String email = editTextMail.getText().toString();
@@ -93,6 +95,7 @@ public class SignInActivity extends AppCompatActivity {
                             .addOnCompleteListener(SignInActivity.this, new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
+                                    mProgressDialog.cancel();
                                     if (task.isSuccessful()) {
                                         // Sign in success, update UI with the signed-in user's information
                                         Log.d(TAG, "signInWithEmail:success");
@@ -188,6 +191,8 @@ public class SignInActivity extends AppCompatActivity {
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
 
+        mProgressDialog.show();
+
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -197,13 +202,14 @@ public class SignInActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            mProgressDialog.cancel();
 
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(SignInActivity.this, task.getException().getMessage().toString(),
                                     Toast.LENGTH_SHORT).show();
-
+                            mProgressDialog.cancel();
                         }
 
                         // ...
