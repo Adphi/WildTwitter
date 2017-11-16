@@ -68,6 +68,8 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 CropImage.activity()
+                        .setCropShape(CropImageView.CropShape.OVAL)
+                        .setAspectRatio(1, 1)
                         .setGuidelines(CropImageView.Guidelines.ON)
                         .start(SignUpActivity.this);
             }
@@ -205,9 +207,8 @@ public class SignUpActivity extends AppCompatActivity {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
-                Uri imageUri = CropImage.getPickImageResultUri(this, data);
-                Log.d(TAG, "onActivityResult: " + imageUri);
-                mAvatarView.setImageDrawable(Drawable.createFromPath(imageUri.getPath()));
+                Uri resultUri = result.getUri();
+                mAvatarView.setImageDrawable(Drawable.createFromPath(resultUri.getPath()));
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
