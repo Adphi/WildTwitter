@@ -52,6 +52,9 @@ dependencies {
     compile 'org.jsoup:jsoup:1.8.3' // required
     compile 'com.leocardz:link-preview:2.0.0@aar'
 
+    // Image Crop
+    compile 'com.theartofdev.edmodo:android-image-cropper:2.4.+'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'

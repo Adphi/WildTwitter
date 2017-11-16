@@ -26,6 +26,8 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -33,7 +35,6 @@ import java.io.File;
 import agency.tango.android.avatarview.IImageLoader;
 import de.hdodenhof.circleimageview.CircleImageView;
 import fr.wcs.wildtwitter.Utils.Constants;
-import pl.aprilapps.easyphotopicker.EasyImage;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -66,8 +67,9 @@ public class SignUpActivity extends AppCompatActivity {
         mAvatarView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EasyImage.openChooserWithGallery(SignUpActivity.this, "Pick an Avatar", 0);
-
+                CropImage.activity()
+                        .setGuidelines(CropImageView.Guidelines.ON)
+                        .start(SignUpActivity.this);
             }
         });
 
@@ -200,25 +202,17 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new EasyImage.Callbacks() {
-            @Override
-            public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
-
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri imageUri = CropImage.getPickImageResultUri(this, data);
+                Log.d(TAG, "onActivityResult: " + imageUri);
+                mAvatarView.setImageDrawable(Drawable.createFromPath(imageUri.getPath()));
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
             }
+        }
 
-            @Override
-            public void onImagePicked(File imageFile, EasyImage.ImageSource source, int type) {
-                Log.d(TAG, "onImagePicked() called with: imageFile = [" + imageFile + "], source = [" + source + "], type = [" + type + "]");
-                mAvatar = imageFile;
-                String avatarUri = imageFile.getPath();
-                mAvatarView.setImageDrawable(Drawable.createFromPath(avatarUri));
 
-            }
-
-            @Override
-            public void onCanceled(EasyImage.ImageSource source, int type) {
-
-            }
-        });
     }
 }

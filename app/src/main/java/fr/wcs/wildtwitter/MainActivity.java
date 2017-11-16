@@ -1,6 +1,8 @@
 package fr.wcs.wildtwitter;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -82,6 +84,10 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.setOffscreenPageLimit(2);
 
         final TabLayout tabLayout = findViewById(R.id.tabs);
+        final int unselectedColor = Color.GRAY;
+        final PorterDuff.Mode filterMode = PorterDuff.Mode.SRC_IN;
+        tabLayout.getTabAt(1).getIcon().setColorFilter(unselectedColor, filterMode);
+        tabLayout.getTabAt(2).getIcon().setColorFilter(unselectedColor, filterMode);
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -110,6 +116,23 @@ public class MainActivity extends AppCompatActivity {
                 mBackButtonCount = 0;
                 if (tab != null) {
                     tab.select();
+                    switch (position) {
+                        case 0:
+                            tabLayout.getTabAt(0).getIcon().clearColorFilter();
+                            tabLayout.getTabAt(1).getIcon().setColorFilter(unselectedColor, filterMode);
+                            tabLayout.getTabAt(2).getIcon().setColorFilter(unselectedColor, filterMode);
+                            break;
+                        case 1:
+                            tabLayout.getTabAt(0).getIcon().setColorFilter(unselectedColor, filterMode);
+                            tabLayout.getTabAt(1).getIcon().clearColorFilter();
+                            tabLayout.getTabAt(2).getIcon().setColorFilter(unselectedColor, filterMode);
+                            break;
+                        case 2:
+                            tabLayout.getTabAt(0).getIcon().setColorFilter(unselectedColor, filterMode);
+                            tabLayout.getTabAt(1).getIcon().setColorFilter(unselectedColor, filterMode);
+                            tabLayout.getTabAt(2).getIcon().clearColorFilter();
+                            break;
+                    }
                 }
             }
 
